@@ -8,19 +8,19 @@ This repository contains Pytorch implementation of experiments from the paper [F
 * TensorRT 8.2.0.6 + CUDA 10.2
 
 ## Usage
-<!-- Basic training IODF and coding with IODF:
+Turn LSQ modules in IODF into FakeQuantize modules:
 ```
-python run_train.py --nn_type resnet --dataset imagenet32 --batchsize 256
+python scripts/init_fakequant_model.py --dataset imagenet64 --batchsize 512 --nn_type resnet --resume your_path  --from_lsq
+```
 
-python run_coding.py --nn_type resnet --dataset imagenet32 --batchsize 500 --resume base --no_decode
-``` -->
-* Follow training procedure described by Algorithm.1 in the paper. Refer to [commands.sh](./commands.sh) for detailed scripts. 
-
-* For TensorRT Implementation, switch to branch trt.
+Build engine: 
+```
+python exp_build_engine.py --nn_type resnet --dataset imagenet64 --batchsize 32 --resume your_path --quantize
+```
 
 ## Contact 
 
-Please open an issue. 
+Please open an issue.
 
 ## Cite
 to do. 

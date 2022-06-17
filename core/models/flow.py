@@ -43,13 +43,14 @@ class Flow(Base):
         self.z_size = (n_channels, height, width)
 
     def forward(self, z, pys=(), ys=(), reverse=False):
+        mid_z = []
         if not reverse:
             for l, layer in enumerate(self.layers):
                 if isinstance(layer, (SplitPrior)):
                     py, y, z = layer(z)
                     pys += (py,)   # py is [mu(z), logs(z)] which is used to compute log p(y), z is passed to next layer while y is dropped. 
                     ys += (y,)
-
+                    mid_z.append(z)
                 else:
                     z = layer(z)
 
@@ -66,14 +67,14 @@ class Flow(Base):
                 else:
                     z = layer(z, reverse=True)
 
-        return z, pys, ys
+        return z, pys, ys, mid_z
 
-    
-    def decode(self, ans_coder, z):
+    def decode(self, z, state, decode_fn):
+
         for l, layer in reversed(list(enumerate(self.layers))):
             if isinstance(layer, SplitPrior):
-                ans_coder, z = layer.decode(ans_coder, z)
-            
+                z, state = layer.decode(z, state, decode_fn)
+
             else:
                 z = layer(z, reverse=True)
 

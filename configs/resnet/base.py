@@ -14,9 +14,9 @@ base = Namespace(
     n_mixtures=5,
 
     quantize=False,
-    a_bits=8,
-    w_bits=32,
-    wq_level='C',
+    wq_level='L',
+
+    build_engine = False,
 
     pruning=False,
     pruned=False,
@@ -27,15 +27,15 @@ base = Namespace(
     nn_depth=8,
     n_channels_list=[128,128,128],
 
-    out_dir='workspace',
+    out_dir='assets',
 
     round_approx='smooth',
     hard_round=True,
     temperature=1.,
 
-    learning_rate=0.0003,
+    learning_rate=0.0001,
     lr_decay=0.99,
-    warmup=5,
+    warmup=1,
     manual_seed=None,
     resume=None
 )

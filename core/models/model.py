@@ -1,10 +1,10 @@
 import torch
-import numpy as np
 
 from .flow import Flow 
 from .layers.base import Base
 from .layers.priors import Prior
 from core.loss.loss import compute_loss_array
+from core.loss.cdf import compute_pmf_cdf
 from configs.configs_wrapper import IODFConfig
 
 class Normalize(Base):
@@ -65,21 +65,36 @@ class Model(Base):
         """
         # Decode z to x.
 
-        assert x.dtype == torch.uint8
+        # assert x.dtype == torch.uint8
 
         x = x.float()
 
-        assert self.variable_type == 'discrete'
-
         x = self.normalize(x)
 
-        z, pys, ys = self.flow(x, pys=(), ys=())
+        z, pys, ys, mid_z = self.flow(x, pys=(), ys=())
 
         pz, z = self.prior(z)  # pz is mu, logs, pi. refer to original paper. 
 
-        loss, bpd, bpd_per_prior = self.loss(pz, z, pys, ys)
+        if self.configs.build_engine == False:
+            # print('Compute loss model.')
+            loss, bpd, bpd_per_prior = self.loss(pz, z, pys, ys)
 
-        return loss, bpd, bpd_per_prior, pz, z, pys, ys
+            return z, pz, ys, pys, bpd
+        
+        else:
+            # print('Compute pmf and cdf.')
+
+            pys += (pz, )
+            ys += (z, )
+            pmfs, cdfs = [], []
+            for j, pj in zip(ys, pys):
+                pmf, cdf = compute_pmf_cdf(j, pj)
+                pmfs.append(pmf)
+                # print(pmf, cdf)
+                cdfs.append(cdf)
+            # exit()
+
+            return pmfs, cdfs, z, pz, ys, pys, mid_z
 
     def inverse(self, z, ys):
         x, pys, py = \
@@ -91,16 +106,3 @@ class Model(Base):
                 torch.uint8)
 
         return x_uint8
-
-    def sample(self, n):
-        z_sample = self.prior.sample(n)
-
-        x_sample, pys, py = \
-            self.flow(z_sample, pys=[], ys=[], reverse=True)
-
-        x_sample = self.normalize(x_sample, reverse=True)
-
-        x_sample_uint8 = torch.clamp(x_sample, min=0, max=255).to(
-                torch.uint8)
-
-        return x_sample_uint8

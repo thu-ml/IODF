@@ -1,32 +1,12 @@
-from core.coder.fast_ans.build import fast_ans
-from .cdf import DiscretizedLogistic, MixtureDiscretizedLogistic
-
+from core.coder.fast_ans.build_trt import fast_ans
 mass_bits = 24
 
-def prepare_pmf_cdf(j, pj):
-    if len(pj) == 3:
-        # mixture 
-        l = MixtureDiscretizedLogistic(*pj, mass_bits, 256)
-    elif len(pj) == 2:
-        l = DiscretizedLogistic(*pj, mass_bits, 256)
-    else:
-        raise RuntimeError
-    pmf, cdf = l.pmf(j)
+def encode(pmfs, cdfs, bs):
+    # pmfs: a list of ndarrays, shape: [batchsize, num_elements]
 
-    return pmf.cpu().float().numpy().ravel(), cdf.cpu().float().numpy().ravel()
+    ans_coder = fast_ans.ANS(mass_bits, bs)
 
-def encode(pz, z, pys, ys):
-    # These tensors should be on GPU to speed up computation
-    batchsize = z.size(0)
-
-    ans_coder = fast_ans.ANS(mass_bits, batchsize)
-
-    ys += (z, )
-    pys += (pz, )
-
-    for y, py in zip(ys, pys):
-
-        pmf, cdf = prepare_pmf_cdf(y, py)
+    for pmf, cdf in zip(pmfs, cdfs):
 
         ans_coder.encode_with_pmf_cdf(pmf, cdf)
     

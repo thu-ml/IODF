@@ -34,31 +34,31 @@ def load_imagenet(args, resolution=32):
         npTotensor()
     ])
 
-    n = 1280000
-    n_val = 50000
-    x_train_val = np.load(trainpath)[:n]
-    x_train = x_train_val[:-n_val]
-    x_val = x_train_val[-n_val:]
-    x_test = np.load(testpath)[-1000:]
-    print(f'Imagenet, {len(x_train)} images for train, {len(x_val)} images for validation, {len(x_test)} images for test.')
+    # n = 1280000
+    # n_val = 50000
+    # x_train_val = np.load(trainpath)[:n]
+    # x_train = x_train_val[:-n_val]
+    # x_val = x_train_val[-n_val:]
+    x_test = np.load(testpath)
+    # print(f'Imagenet, {len(x_train)} images for train, {len(x_val)} images for validation, {len(x_test)} images for test.')
 
-    trainset = ImageNetDataset(x_train, data_transform)
-    valset = ImageNetDataset(x_val, data_transform)
+    # trainset = ImageNetDataset(x_train, data_transform)
+    # valset = ImageNetDataset(x_val, data_transform)
     testset = ImageNetDataset(x_test, data_transform)
 
-    train_loader = torch.utils.data.DataLoader(
-        trainset,
-        batch_size=args.batch_size,
-        shuffle=True,
-        num_workers=8,
-        pin_memory=True)
+    # train_loader = torch.utils.data.DataLoader(
+    #     trainset,
+    #     batch_size=args.batch_size,
+    #     shuffle=True,
+    #     num_workers=8,
+    #     pin_memory=True)
 
-    val_loader = torch.utils.data.DataLoader(
-        valset,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=8,
-        pin_memory=True)
+    # val_loader = torch.utils.data.DataLoader(
+    #     valset,
+    #     batch_size=args.batch_size,
+    #     shuffle=False,
+    #     num_workers=8,
+    #     pin_memory=True)
 
     test_loader = torch.utils.data.DataLoader(
         testset,
@@ -67,7 +67,7 @@ def load_imagenet(args, resolution=32):
         num_workers=8,
         pin_memory=True)
 
-    return train_loader, val_loader, test_loader
+    return None, None, test_loader
 
 
 def load_imagenet32(args):

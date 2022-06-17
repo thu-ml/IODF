@@ -1,5 +1,4 @@
 from PIL import Image
-
 import numpy as np 
 
 def read_img(s):
@@ -7,7 +6,7 @@ def read_img(s):
     img = Image.open(dp)
     w,h = img.size
     img = np.array(img.getdata()).reshape(w,h,3).transpose(2,0,1)
-    return img, w, h 
+    return img, w, h
 
 def load_wild_32(reso):
     img, w, h = read_img(reso)
@@ -42,8 +41,6 @@ def load_wild_64(reso):
     m, n = w // 64, h // 64
 
     r = 64 - (h - n * 64)
-
-    print(r)
 
     img = np.concatenate([img, np.zeros([3, w, r])], axis=-1)
 

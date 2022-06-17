@@ -110,16 +110,11 @@ class Prior(Base):
 
         return z_sample
 
-    def decode(self, ans_coder):
-        pz = self.get_pz(n=ans_coder.num_streams())
+    def decode(self, states, decode_fn):
+        pz = self.get_pz(n=len(states))
 
-        pz_array = [j.cpu().float().numpy().ravel() for j in pz]
-
-        z = ans_coder.decode_mix_logistic(*pz_array)
-        
-        z = torch.from_numpy(z.reshape(pz[0].shape[:4])).to(pz[0].device)
-        
-        return ans_coder, z
+        states, z = decode_fn(states, pz)
+        return states, z
 
 
 class SplitPrior(Base):
@@ -179,16 +174,8 @@ class SplitPrior(Base):
         z = self.combine(z, y)
 
         return z
-    
-    def decode(self, ans_coder, z):
+
+    def decode(self, z, states, decode_fn):
         py = self.get_py(z)
-
-        py_array = [j.cpu().float().numpy().ravel() for j in py]
-
-        y_shape = py[0].shape[:4]
-
-        y = ans_coder.decode_logistic(*py_array)
-
-        y = torch.from_numpy(y.reshape(y_shape)).to(py[0].device)
-
-        return ans_coder, self.combine(z, y)
+        states, y = decode_fn(states, py)
+        return self.combine(z, y), states

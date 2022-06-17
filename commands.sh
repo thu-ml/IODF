@@ -1,21 +1,14 @@
-## train 
-python run_train.py --nn_type resnet --dataset imagenet32 --batchsize 256
+# evaluate bpd
+python run_evaluate_bpd.py --nn_type resnet --dataset imagenet64 --batchsize 500 --resume IODF --pruned 
 
-## initialize pruning model: add binary gates into convolution layers, and train the gated model. 
-python scripts/init_pruning_conv1_model.py --nn_type resnet --dataset imagenet32 --resume your_path
-python run_train.py --nn_type resnet --dataset imagenet32 --batchsize 256 --pruning --resume your_path
+# evaluate torch inference 
+python exp_torch_latency.py --nn_type densenet --dataset imagenet32 --batchsize 16 --resume base_8bit
 
-## remove binary gates and disabled filters and finetune 
-python scripts/remove_masks_in_pruning_model.py --nn_type resnet --dataset imagenet32 --resume your_path --batchsize 500 --epoch 1 --pmode conv1
-python run_train.py --nn_type resnet --dataset imagenet32 --batchsize 256 --pruned --resume your_path
+## build trt engine
+python exp_build_engine.py --nn_type resnet --dataset imagenet64 --batchsize 16 --resume base_8bit --quantize
+ 
+## test inference latency 
+python run_test_latency_inference.py --dataset imagenet32 --batchsize 16 --engine_path resnet_q_np-base_asym 
 
-## initialize activation quantized model and finetune 
-python scripts/init_a_lsq_model.py --nn_type resnet --dataset imagenet32 --resume your_path
-python run_train.py --nn_type resnet --dataset imagenet32 --batchsize 256 --quantize --resume your_path
-
-## initialize activation and weights both quantized model and finetune 
-python scripts/init_aw_lsq_model.py --nn_type resnet --dataset imagenet32 --resume your_path 
-python run_train.py --nn_type resnet --dataset imagenet32 --batchsize 256 --quantize --resume your_path
-
-## evaluate coding
-python run_coding.py --nn_type resnet --dataset imagenet32 --batchsize 500 --resume base --no_decode
+## load fakequant model
+python scripts/init_fakequant_model.py --dataset imagenet64 --batchsize 512 --nn_type densenet --resume base  

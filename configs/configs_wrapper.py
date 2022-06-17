@@ -12,13 +12,10 @@ IODFConfig = namedtuple('IODFConfig', ['model_name',
                                     'n_mixtures',
                                     
                                     'quantize',
-                                    'a_bits',
-                                    'w_bits',
                                     'wq_level',
 
-                                    'pruning',
-                                    'pruned', 
-                                    'prune_mode', 
+                                    'pruned',
+                                    'prune_mode',
 
                                     'coupling_type',
                                     'splitprior_type', 
@@ -50,16 +47,4 @@ IODFConfig = namedtuple('IODFConfig', ['model_name',
                                     'batch_size', 
                                     'device',
                                     'snap_dir'
-])
-
-
-DPConfig = namedtuple('DPConfig', [
-                                    'weight_decay', 
-                                    'weight_decay_bias',
-                                    'momentum',
-                                    'compactor_momentum',
-                                    'lasso_strength',
-                                    'mask_interval',
-                                    'before_mask_iters',
-                                    'no_l2_keywords'
 ])

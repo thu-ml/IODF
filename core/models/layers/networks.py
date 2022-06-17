@@ -1,14 +1,13 @@
 import torch
 import torch.nn as nn
+import torch.quantization as quantization
 
 from .modules.modules import get_conv
-from .modules.lsq import LSQ
 from .modules.blocks import get_resblock, DenseBlock
-from .base import Base
 
 from configs.configs_wrapper import IODFConfig
 
-class NN(Base):
+class NN(nn.Module):
     def __init__(
             self, configs:IODFConfig, c_in, c_out, nn_type):
         super().__init__()
@@ -20,24 +19,22 @@ class NN(Base):
             Block = get_resblock(configs)
 
             layers = [
-                get_conv(c_in, n_channels, 3, _quantize = False, _pruning = False, \
-                        w_bits = configs.w_bits, a_bits = configs.a_bits, wq_level = configs.wq_level)
-                ]
+                get_conv(c_in, n_channels, 3, False, wq_level = configs.wq_level)
+            ]
 
             for _ in range(configs.nn_depth):
                 layers.append(
-                    Block(n_channels, configs.quantize, configs.pruning, \
-                        w_bits = configs.w_bits, a_bits = configs.a_bits, wq_level = configs.wq_level)
+                    Block(n_channels, configs.quantize, wq_level = configs.wq_level)
                 )
 
             layers.append(
-                get_conv(n_channels, c_out, 3, _quantize = configs.quantize, _pruning = False, \
-                        w_bits = configs.w_bits, a_bits = configs.a_bits, wq_level = configs.wq_level)
+                get_conv(n_channels, c_out, 3, _quantize = configs.quantize, wq_level = configs.wq_level)
             )
 
             if configs.quantize:
-                layers[1].residual_function[0].input_quantizer = LSQ(configs.a_bits, is_act = False)
-                layers[1].shortcut = LSQ(configs.a_bits, is_act = False)
+                # print(layers[1].residual_function[0].input_quantizer)
+                layers[1].residual_function[0].input_quantizer = quantization.FakeQuantize(observer=quantization.MovingAverageMinMaxObserver, \
+                    quant_min=-128, quant_max=127, dtype=torch.qint8)
         
         elif nn_type == 'densenet':
             configs.densenet_depth = configs.nn_depth
@@ -50,8 +47,8 @@ class NN(Base):
             ]
 
             layers += [
-                get_conv(n_channels + c_in, c_out, 3, configs.quantize, False, w_bits = configs.w_bits, a_bits = configs.a_bits, wq_level = configs.wq_level)
-            ]
+                nn.Conv2d(n_channels + c_in, c_out, kernel_size=3, padding=1)
+                ]
             
         else:
             raise ValueError

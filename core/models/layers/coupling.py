@@ -3,13 +3,11 @@ Collection of flow strategies
 """
 
 from __future__ import print_function
-from typing import Counter
 
 import torch
 import numpy as np
 
 from .base import Base
-from .backround import BackRound
 from .networks import NN
 
 
@@ -22,12 +20,6 @@ class SplitFactorCoupling(Base):
         self.kernel = 3
         self.input_channel = c_in
         self.round_approx = configs.round_approx
-
-        if configs.variable_type == 'discrete':
-            self.round = BackRound(
-                configs, inverse_bin_width=configs.inverse_bin_width)
-        else:
-            self.round = None
 
         self.split_idx = c_in - (c_in // factor)
         
@@ -44,8 +36,8 @@ class SplitFactorCoupling(Base):
 
         t = self.nn(z1)
 
-        if self.round is not None:
-            t = self.round(t)
+        t = torch.floor(t*256 + 0.5)
+        t /= 256.
 
         if not reverse:
             z2 = z2 + t

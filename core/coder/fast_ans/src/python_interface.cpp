@@ -15,7 +15,7 @@ using namespace pybind11::literals;
 using VectorXd = Eigen::VectorXd;
 using MatrixXd = Eigen::MatrixXd;
 typedef Eigen::Array<float, Eigen::Dynamic, 1> ArrayYu;
-typedef Eigen::Array<uint64_t, Eigen::Dynamic, 1> ArrayYYYu; 
+typedef Eigen::Array<int, Eigen::Dynamic, 1> ArrayYYYu; 
 
 
 class PyANS {

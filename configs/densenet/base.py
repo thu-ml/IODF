@@ -14,17 +14,16 @@ base = Namespace(
     n_mixtures=5,
 
     quantize=False,
-    w_bits=8,
-    a_bits=8,
-    wq_level='C',
-    pruning=False,
+    wq_level = 'C',
+
+    build_engine = False,
 
     coupling_type='densenet',
     splitprior_type='densenet',
     nn_depth=12,
     n_channels_list=[512,512,512],
 
-    out_dir='workspace',
+    out_dir='assets',
 
     round_approx='smooth',
     hard_round=True,

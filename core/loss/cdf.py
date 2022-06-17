@@ -77,4 +77,15 @@ class MixtureDiscretizedLogistic():
         c_prob = mixture_discretized_logistic_cdf(z - 0.5 / self.inverse_bin_width, self.mean, self.logscale, self.pi_mix)
         loc = self.cdf_bins.locate(z)
         return c_prob * (self.total_mass - self.cdf_bins.num_syms) + loc
-        
+
+def compute_pmf_cdf(j, pj):
+    if len(pj) == 3:
+        l = MixtureDiscretizedLogistic(*pj, mass_bits=24, inverse_bin_width=256)
+    elif len(pj) == 2:
+        l = DiscretizedLogistic(*pj, mass_bits=24, inverse_bin_width=256)
+    else:
+        raise ValueError
+    
+    pmf, cdf = l.pmf(j)
+    
+    return pmf, cdf

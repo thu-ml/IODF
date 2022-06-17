@@ -25,16 +25,20 @@ struct ANSBitstream {
     }
 
     void print_stream() {
-        printf("Print Stream... \n");
         for (int i = 0; i < stream.size(); ++i){
             printf("%" PRIu64 "\n", uint64_t (stream[i] & ((ONE << S_BITS) - 1)));
         }
-
-        printf("%" PRIu64 "\n", peek());
         
     }
 
     void encode(uint64_t pmf, uint64_t cdf) {
+        //For debug
+        // printf("%" PRIu64 "\n", peek());
+        // printf("%" PRIu64, pmf);
+        // printf("     ");
+        // printf("%" PRIu64, cdf);
+        // printf("\n\n");
+        
         if (tip >= ((RANS_L >> mass_bits) << S_BITS) * pmf) {
             stream.push_back(tip);
             tip >>= S_BITS;
@@ -55,7 +59,7 @@ struct ANSBitstream {
     }
 
     uint64_t peek() const {
-        return tip & ((ONE << mass_bits) - 1);
+        return tip & ((ONE << S_BITS) - 1);
     }
 
     size_t tip_length() const {
