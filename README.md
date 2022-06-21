@@ -1,4 +1,4 @@
-# Integer-Only Discrete Flows (ICML 2022) [arxiv]
+# Integer-Only Discrete Flows (ICML 2022) [[arxiv](https://arxiv.org/abs/2206.08869)]
 
 This repository contains Pytorch implementation of experiments from the paper [Fast Lossless Neural Compression with Integer-Only Discrete Flows](http://101.6.240.88:9000/project/62970673d23e15008fcc652d). The implementation is based on [Integer Discrete Flows](https://github.com/jornpeters/integer_discrete_flows). rANS entropy coding in C language is based on [local bits back](https://github.com/hojonathanho/localbitsback).
 
