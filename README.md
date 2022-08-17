@@ -23,4 +23,12 @@ python run_coding.py --nn_type resnet --dataset imagenet32 --batchsize 500 --res
 Please open an issue. 
 
 ## Cite
-to do. 
+```
+@inproceedings{wang2022fast,
+  title={Fast Lossless Neural Compression with Integer-Only Discrete Flows},
+  author={Wang, Siyu and Chen, Jianfei and Li, Chongxuan and Zhu, Jun and Zhang, Bo},
+  booktitle={International Conference on Machine Learning},
+  year={2022},
+  organization={PMLR}
+}
+```
