@@ -7,7 +7,7 @@ class lsq_weight(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input, scale, bits):
         num_bins = 2**bits - 1  # 255
-        bias = -num_bins // 2 - 1 # Q_N = 128, Q_P = 127, bias = -Q_N
+        bias = - (num_bins // 2) - 1 # Q_N = 128, Q_P = 127, bias = -Q_N
         num_features = input.numel()
         grad_scale = 1.0 / np.sqrt(num_features)
 
@@ -92,7 +92,7 @@ class lsq_quantize_perchannel(torch.autograd.Function):
     def forward(ctx, input, scale, bits):
         scale = scale.view(-1, 1, 1, 1)
         num_bins = 2 ** bits - 1
-        bias = - num_bins // 2 - 1
+        bias = - (num_bins // 2) - 1
         num_features = input.numel() / input.shape[0]
         grad_scale = 1.0 / np.sqrt(num_features * num_bins)
 
